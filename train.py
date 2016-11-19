@@ -37,10 +37,10 @@ input = Input(shape=(seq_len,), dtype='int32', name='main_input')
 f = Embedding(vocab_size, 128, input_length=seq_len)(input)
 f = Bidirectional(LSTM(64))(f)
 f = Dropout(0.5)(f)
-model = Model(input,f)
-model.compile(loss=sampled_loss, optimizer='adadelta')
+encoder = Model(input,f)
+encoder.compile(loss='categorical_crossentropy', optimizer='adam')
 
 
 for i, (x, y, w) in enumerate(it):
     print(str(i))
-    model.train_on_batch(self, x, y)
+    model.train_on_batch(x, y)
