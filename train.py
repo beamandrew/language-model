@@ -10,3 +10,7 @@ print("loaded vocab, num tokens " + str(vocab._num_tokens))
 print("Loading data...")
 dataset = Dataset(vocab, "/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/*")
 print("Data loaded")
+
+it = dataset.iterate_once(128,20)
+for i, (x, y, w) in enumerate(it):
+    print(str(i))
