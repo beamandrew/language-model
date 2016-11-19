@@ -15,3 +15,4 @@ it = dataset.iterate_once(128,20)
 for i, (x, y, w) in enumerate(it):
     print('x' + str(x.shape))
     print('y' + str(y.shape))
+    print('w' + str(w.shape))
