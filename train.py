@@ -1,3 +1,15 @@
+def sampled_loss(y_true, y_pred):
+    labels = tf.reshape(y_true, [-1, 1])
+    # We need to compute the sampled_softmax_loss using 32bit floats to
+    # avoid numerical instabilities.
+    local_w_t = tf.cast(w_t, tf.float32)
+    local_b = tf.cast(b, tf.float32)
+    local_inputs = tf.cast(y_pred, tf.float32)
+    return tf.cast(
+        tf.nn.sampled_softmax_loss(local_w_t, local_b, local_inputs, labels,
+                                   25, vocab_size),
+        np.float32)
+
 import numpy as np
 
 import tensorflow as tf
@@ -16,17 +28,19 @@ print("Data loaded")
 
 seq_len = 25  # cut texts after this number of words (among top max_features most common words)
 batch_size = 32
+embed_size = 128
+vocab_size = vocab._num_tokens
 
 it = dataset.iterate_once(batch_size,seq_len)
 
-main_input = Input(shape=(seq_len,), dtype='int32', name='main_input')
-model.add(Embedding(max_features, 128, input_length=maxlen))
-model.add(Bidirectional(LSTM(64)))
-model.add(Dropout(0.5))
-model.add(Dense(1, activation='sigmoid'))
+input = Input(shape=(seq_len,), dtype='int32', name='main_input')
+f = Embedding(vocab_size, 128, input_length=seq_len)(input)
+f = Bidirectional(LSTM(64))(f)
+f = Dropout(0.5)(f)
+model = Model(input,f)
+model.compile(loss=sampled_loss, optimizer='adadelta')
 
 
 for i, (x, y, w) in enumerate(it):
-    print('x' + str(x.shape))
-    print('y' + str(y.shape))
-    print('w' + str(w.shape))
+    print(str(i))
+    model.train_on_batch(self, x, y)
