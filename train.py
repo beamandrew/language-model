@@ -13,5 +13,5 @@ print("Data loaded")
 
 it = dataset.iterate_once(128,20)
 for i, (x, y, w) in enumerate(it):
-    print('x' + x.shape)
-    print('y' + y.shape)
+    print('x' + str(x.shape))
+    print('y' + str(y.shape))
