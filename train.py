@@ -16,8 +16,8 @@ import tensorflow as tf
 from data_utils import Vocabulary, Dataset
 
 from keras.models import Model
-from keras.layers import Dense, Dropout, Embedding, LSTM, Input, Bidirectional
-
+from keras.layers import Dense, Dropout, Embedding, LSTM, Input, TimeDistributedDense, Activation
+from keras.utils.visualize_util import plot
 
 vocab = Vocabulary.from_file("1b_word_vocab.txt")
 print("loaded vocab, num tokens " + str(vocab._num_tokens))
@@ -34,13 +34,14 @@ vocab_size = vocab._num_tokens
 it = dataset.iterate_once(batch_size,seq_len)
 
 input = Input(shape=(seq_len,), dtype='int32', name='main_input')
-f = Embedding(vocab_size, 128, input_length=seq_len)(input)
-f = Bidirectional(LSTM(64))(f)
-f = Dropout(0.5)(f)
-encoder = Model(input,f)
-encoder.compile(loss='categorical_crossentropy', optimizer='adam')
-
+f = Embedding(vocab_size+1, embed_size, input_length=seq_len)(input)
+f = LSTM(output_dim=256,return_sequences=True)(f)
+f = TimeDistributedDense(vocab_size, activation='relu')(f)
+f = Activation(activation='softmax')(f)
+model = Model(input,f)
+model.compile(loss='categorical_crossentropy', optimizer='adam')
+plot(model, to_file='model.png')
 
 for i, (x, y, w) in enumerate(it):
     print(str(i))
-    model.train_on_batch(x, y)
+    print("logloss = " + str(model.train_on_batch(x, y)))
