@@ -11,25 +11,21 @@ def sampled_loss(y_true, y_pred):
         np.float32)
 
 import numpy as np
+from data_utils import Dataset
 
 import tensorflow as tf
-from data_utils import Vocabulary, Dataset
-
 from keras.models import Model
 from keras.layers import Dense, Dropout, Embedding, LSTM, Input, TimeDistributedDense, Activation
-from keras.utils.visualize_util import plot
 
-vocab = Vocabulary.from_file("1b_word_vocab.txt")
-print("loaded vocab, num tokens " + str(vocab._num_tokens))
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
+NUM_WORDS = 20000
 
-print("Loading data...")
-dataset = Dataset(vocab, "/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/*")
-print("Data loaded")
+seq_len = 25
+dataset = Dataset(data_dir,NUM_WORDS)
+X,Y = dataset.create_X_Y(seq_len=seq_len,one_hot_y=True)
 
-seq_len = 25  # cut texts after this number of words (among top max_features most common words)
 batch_size = 32
 embed_size = 128
-vocab_size = vocab._num_tokens
 
 it = dataset.iterate_once(batch_size,seq_len)
 
@@ -42,6 +38,3 @@ model = Model(input,f)
 model.compile(loss='categorical_crossentropy', optimizer='adam')
 plot(model, to_file='model.png')
 
-for i, (x, y, w) in enumerate(it):
-    print(str(i))
-    print("logloss = " + str(model.train_on_batch(x, y)))
