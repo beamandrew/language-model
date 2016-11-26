@@ -17,6 +17,7 @@ batch_size = 32
 embed_size = 128
 num_epochs = 2
 
+
 model = get_model(params)
 progbar = generic_utils.Progbar(len(X))
 
