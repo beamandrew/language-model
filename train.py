@@ -1,5 +1,6 @@
 from data_utils import Dataset
 from keras.utils import generic_utils
+from model import *
 import numpy as np
 
 
@@ -10,21 +11,23 @@ seq_len = 25
 dataset = Dataset(data_dir,NUM_WORDS)
 X,Y = dataset.create_X_Y(seq_len=seq_len,one_hot_y=False)
 
-params = {}
-params['vocab_size'] = dataset.vocab_size
-params['num_classes'] = dataset.vocab_size
-
 batch_size = 32
 embed_size = 128
 num_epochs = 2
 
+params = {}
+params['vocab_size'] = dataset.vocab_size
+params['num_classes'] = dataset.vocab_size
+params['batch_size'] = batch_size
+params['seq_len'] = seq_len
 
 losses,outputs = get_model_tf(params)
+sess = tf.InteractiveSession()
 sess.run(tf.initialize_all_variables())
 loss_function = tf.reduce_mean(losses)
 train_step = tf.train.AdamOptimizer(0.001).minimize(loss_function)
 
-train_step.run(feed_dict={input: X_batch, labels: Y[start:end]})
+train_step.run(feed_dict={input:np.float32(X_batch), labels:Y_batch})
 
 
 progbar = generic_utils.Progbar(len(X))
