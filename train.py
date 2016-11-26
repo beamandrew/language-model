@@ -1,5 +1,6 @@
 from data_utils import Dataset
 from keras.utils import generic_utils
+import numpy as np
 
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
@@ -18,9 +19,15 @@ embed_size = 128
 num_epochs = 2
 
 
-model = get_model(params)
-progbar = generic_utils.Progbar(len(X))
+losses,outputs = get_model_tf(params)
+sess.run(tf.initialize_all_variables())
+loss_function = tf.reduce_mean(losses)
+train_step = tf.train.AdamOptimizer(0.001).minimize(loss_function)
 
+train_step.run(feed_dict={input: X_batch, labels: Y[start:end]})
+
+
+progbar = generic_utils.Progbar(len(X))
 for epoch in range(num_epochs):
     batches = range(0,len(X)/batch_size)
     for batch in batches[:-1]:
@@ -29,4 +36,5 @@ for epoch in range(num_epochs):
         X_batch = X[start:end]
         Y_batch = dataset.Y_to_Categorical(Y[start:end])
         loss = model.train_on_batch(X_batch,Y_batch)
-        progbar.add(len(X_batch), values=[("train loss", loss)])
+        perp = np.exp(loss)
+        progbar.add(len(X_batch), values=[("train loss", loss),("train perplexity", perp)])

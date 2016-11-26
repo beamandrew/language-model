@@ -25,3 +25,26 @@ def get_model(params):
     model = Model(input,f)
     model.compile(optimizer='rmsprop',loss='categorical_crossentropy')
     return model
+
+def get_model_tf(params):
+    batch_size = params['batch_size']
+    input = tf.placeholder(tf.float32,shape=(None,seq_len))
+    rnn = Embedding(vocab_size+1, 128, input_length=seq_len)(input)
+    rnn = LSTM(output_dim=512,return_sequences=True,name='rnn_1')(rnn)
+    rnn_output = tf.unpack(rnn,axis=1)
+    w_proj = tf.Variable(tf.zeros([20000,512]))
+    b_proj = tf.Variable(tf.zeros([20000]))
+    labels = []
+    for t in range(seq_len):
+        labels.append(tf.placeholder(tf.int32,[batch_size,1]))
+
+    losses = []
+    outputs = []
+    for t in range(seq_len):
+        rnn_t = rnn_output[t]
+        step_loss = tf.nn.sampled_softmax_loss(weights=w_proj, biases=b_proj, inputs=rnn_t,
+                                                    labels=labels[t], num_sampled=25, num_classes=params['vocab_size'])
+        losses.append(step_loss)
+        outputs.append(tf.matmul(rnn_t,tf.transpose(w_proj)) + b_proj)
+
+    return losses,outputs
