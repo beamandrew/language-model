@@ -3,7 +3,6 @@ from keras.utils import generic_utils
 from model import *
 import numpy as np
 
-
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
 NUM_WORDS = 20000
 
