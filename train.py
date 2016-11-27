@@ -4,7 +4,7 @@ from model import LanguageModel
 import numpy as np
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
-NUM_WORDS = 150000
+NUM_WORDS = 125000
 
 seq_len = 25
 dataset = Dataset(data_dir,NUM_WORDS)
