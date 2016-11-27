@@ -8,12 +8,13 @@ import time as time
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
+valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 num_words = 125000
 
 seq_len = 25
-batch_size = 256
+batch_size = 512
 embed_size = 256
-num_epochs = 10
+num_epochs = 2
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
@@ -24,14 +25,15 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
-params['hidden_dim'] = 512
-params['num_layers'] = 2
+params['hidden_dim'] = 256
+params['num_layers'] = 1
 
 model = LanguageModel(params)
 model.compile()
 
 progbar = generic_utils.Progbar(dataset.token.document_count)
 for epoch in range(num_epochs):
+    dataset.set_data_dir(data_dir)
     for X_batch,Y_batch in dataset:
         t0 = time.time()
         loss = model.train_on_batch(X_batch,Y_batch)
@@ -39,5 +41,10 @@ for epoch in range(num_epochs):
         t1 = time.time()
         wps = np.round((batch_size * seq_len)/(t1-t0))
         progbar.add(len(X_batch), values=[("loss", loss),("perplexity", perp),("words/sec", wps)])
-
-
+    dataset.set_data_dir(valid_data_dir)
+    perp = 0.
+    denom = 0.
+    for X_batch, Y_batch in dataset:
+        perp += model.evaluate(X_batch, Y_batch)
+        denom += len(X_batch)
+    print 'Validation Perplexity: ' + str(perp/denom)
