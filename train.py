@@ -20,14 +20,13 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
+params['hidden_dim'] = 128
 
-losses,outputs = get_model_tf(params)
-sess = tf.InteractiveSession()
-sess.run(tf.initialize_all_variables())
-loss_function = tf.reduce_mean(losses)
-train_step = tf.train.AdamOptimizer(0.001).minimize(loss_function)
+model = LanguageModel(params)
+model.compile()
 
-train_step.run(feed_dict={input:np.float32(X_batch), labels:Y_batch})
+data = {'input': np.float32(X[0:32]), 'labels': Y[0:32]}
+train_step.run(feed_dict=data)
 
 
 progbar = generic_utils.Progbar(len(X))
