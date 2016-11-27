@@ -10,7 +10,7 @@ class DataGenerator(object):
     def __init__(self,data_dir):
         self.file_list = os.listdir(data_dir)
         self.data_dir = data_dir
-        self.progbar = generic_utils.Progbar(len(file_list))
+        self.progbar = generic_utils.Progbar(len(self.file_list))
     def __iter__(self):
         for fname in self.file_list:
             self.progbar.add(1)
@@ -21,6 +21,8 @@ class DataGenerator(object):
 
 class Dataset(object):
     def __init__(self,data_dir,num_words=None):
+        self.file_list = os.listdir(data_dir)
+        self.data_dir = data_dir
         self.texts = DataGenerator(data_dir)
         self.token = Tokenizer(nb_words=num_words, lower=True, split=' ')
         print('Reading files...')
@@ -29,17 +31,25 @@ class Dataset(object):
         print(str(self.vocab_size))
         if num_words is not None:
             self.vocab_size = num_words
-    def create_X_Y(self,seq_len=25,one_hot_y=False):
-        proc_txt = self.token.texts_to_sequences(self.all_texts)
-        X = [txt[:min(len(txt),seq_len)] for txt in proc_txt]
-        X = pad_sequences(X)
-        if(one_hot_y):
-            Y = []
-            num_classes =  self.vocab_size
-            for txt in proc_txt:
-                y_txt = txt[1:min(len(txt),seq_len)+1]
-                Y.append(to_categorical(y_txt, nb_classes=num_classes).tolist())
-        else:
-            Y = [txt[1:min(len(txt),seq_len)+1] for txt in proc_txt]
-            Y = pad_sequences(Y)
-        return X,Y
+        self.batch_size = 32
+        self.seq_len = 25
+    def  __iter__(self):
+        for fname in self.file_list:
+            with open(os.path.join(self.data_dir, fname)) as f:
+                lines = []
+                for line in f:
+                    if len(lines) == self.batch_size:
+                        proc_txt = self.token.texts_to_sequences(lines)
+                        X_batch = [txt[:min(len(txt)-1, self.seq_len)] for txt in proc_txt]
+                        X_batch = pad_sequences(X_batch)
+                        Y_batch = [txt[1:min(len(txt), self.seq_len) + 1] for txt in proc_txt]
+                        Y_batch = pad_sequences(Y_batch)
+                        lines = []
+                        yield X_batch,Y_batch
+                    else:
+                        lines.append(line)
+    def set_batch_size(self,batch_size):
+        self.batch_size = batch_size
+    def set_data_dir(self,data_dir):
+        self.data_dir = data_dir
+        self.file_list = os.listdir(data_dir)

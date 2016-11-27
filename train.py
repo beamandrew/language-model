@@ -8,15 +8,16 @@ import time as time
 tf.logging.set_verbosity(tf.logging.ERROR)
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
-NUM_WORDS = 125000
+num_words = 125000
 
 seq_len = 25
-dataset = Dataset(data_dir,NUM_WORDS)
-X,Y = dataset.create_X_Y(seq_len=seq_len,one_hot_y=False)
-
 batch_size = 256
 embed_size = 256
 num_epochs = 10
+
+dataset = Dataset(data_dir,num_words)
+dataset.set_batch_size(batch_size)
+
 
 params = {}
 params['vocab_size'] = dataset.vocab_size
@@ -29,15 +30,10 @@ params['num_layers'] = 2
 model = LanguageModel(params)
 model.compile()
 
-progbar = generic_utils.Progbar(len(X))
+progbar = generic_utils.Progbar(dataset.token.document_count)
 for epoch in range(num_epochs):
-    batches = range(0,len(X)/batch_size)
-    for batch in batches[:-1]:
+    for X_batch,Y_batch in dataset:
         t0 = time.time()
-        start = batch*batch_size
-        end = (batch+1)*batch_size
-        X_batch = X[start:end]
-        Y_batch = Y[start:end]
         loss = model.train_on_batch(X_batch,Y_batch)
         perp = np.exp(np.float32(loss))
         t1 = time.time()
