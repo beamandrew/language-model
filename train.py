@@ -38,7 +38,6 @@ for epoch in range(num_epochs):
         end = (batch+1)*batch_size
         X_batch = X[start:end]
         Y_batch = Y[start:end]
-        #perp =  model.evaluate(X_batch,Y_batch)
         loss = model.train_on_batch(X_batch,Y_batch)
         perp = np.exp(np.float32(loss))
         t1 = time.time()

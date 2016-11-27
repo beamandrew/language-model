@@ -4,23 +4,29 @@ import numpy as np
 from keras.preprocessing.text import Tokenizer
 from keras.utils.np_utils import to_categorical
 from keras.preprocessing.sequence import pad_sequences
+from keras.utils import generic_utils
+
+class DataGenerator(object):
+    def __init__(self,data_dir):
+        self.file_list = os.listdir(data_dir)
+        self.data_dir = data_dir
+        self.progbar = generic_utils.Progbar(len(file_list))
+    def __iter__(self):
+        for fname in self.file_list:
+            self.progbar.add(1)
+            with open(os.path.join(self.data_dir,fname)) as f:
+                for line in f:
+                    yield line
+
 
 class Dataset(object):
     def __init__(self,data_dir,num_words=None):
-        self.data_dir = data_dir
-        self.file_list = os.listdir(data_dir)
-        self.all_texts = []
-        for f in self.file_list:
-            print f
-            reader = open(os.path.join(data_dir,f))
-            txt = reader.read()
-            txt = txt.split('\n')
-            self.all_texts.extend(txt)
-            reader.close()
-        print(str(len(self.all_texts)))
+        self.texts = DataGenerator(data_dir)
         self.token = Tokenizer(nb_words=num_words, lower=True, split=' ')
-        self.token.fit_on_texts(self.all_texts)
+        print('Reading files...')
+        self.token.fit_on_texts(self.texts)
         self.vocab_size = len(self.token.word_index)
+        print(str(self.vocab_size))
         if num_words is not None:
             self.vocab_size = num_words
     def create_X_Y(self,seq_len=25,one_hot_y=False):
@@ -37,9 +43,3 @@ class Dataset(object):
             Y = [txt[1:min(len(txt),seq_len)+1] for txt in proc_txt]
             Y = pad_sequences(Y)
         return X,Y
-    def Y_to_Categorical(self,Y):
-        num_classes = self.vocab_size
-        Y_cat = np.zeros((Y.shape[0], len(Y[0]), num_classes))
-        for i in range(len(Y)):
-            Y_cat[i]  = to_categorical(Y[i], nb_classes=num_classes)
-        return Y_cat
