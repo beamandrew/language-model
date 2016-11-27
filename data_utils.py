@@ -10,7 +10,7 @@ class Dataset(object):
         self.data_dir = data_dir
         self.file_list = os.listdir(data_dir)
         self.all_texts = []
-        for f in self.file_list[0:10]:
+        for f in self.file_list:
             print f
             reader = open(os.path.join(data_dir,f))
             txt = reader.read()
