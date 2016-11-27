@@ -15,7 +15,7 @@ class LanguageModel(object):
         # Set up the input placeholder
         self.input_seq = tf.placeholder(tf.float32, shape=(self.batch_size, self.seq_len))
         # Build the RNN
-        self.rnn = Embedding(self.vocab_size + 1, 128, input_length=seq_len)(self.input_seq)
+        self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
         self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
         rnn_output = tf.unpack(self.rnn, axis=1)
         self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))

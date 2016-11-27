@@ -10,7 +10,7 @@ class Dataset(object):
         self.data_dir = data_dir
         self.file_list = os.listdir(data_dir)
         self.all_texts = []
-        for f in self.file_list[0:2]:
+        for f in self.file_list[0:10]:
             print f
             reader = open(os.path.join(data_dir,f))
             txt = reader.read()
@@ -42,5 +42,4 @@ class Dataset(object):
         Y_cat = np.zeros((Y.shape[0], len(Y[0]), num_classes))
         for i in range(len(Y)):
             Y_cat[i]  = to_categorical(Y[i], nb_classes=num_classes)
-
         return Y_cat

@@ -11,7 +11,7 @@ dataset = Dataset(data_dir,NUM_WORDS)
 X,Y = dataset.create_X_Y(seq_len=seq_len,one_hot_y=False)
 
 batch_size = 32
-embed_size = 128
+embed_size = 256
 num_epochs = 2
 
 params = {}
