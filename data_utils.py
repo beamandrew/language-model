@@ -12,7 +12,7 @@ class DataGenerator(object):
         self.data_dir = data_dir
         self.progbar = generic_utils.Progbar(len(self.file_list))
     def __iter__(self):
-        for fname in self.file_list:
+        for fname in self.file_list[0:1]:
             self.progbar.add(1)
             with open(os.path.join(self.data_dir,fname)) as f:
                 for line in f:
