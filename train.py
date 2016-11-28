@@ -14,7 +14,7 @@ num_words = 125000
 seq_len = 25
 batch_size = 256
 embed_size = 256
-num_epochs = 2
+num_epochs = 5
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
@@ -29,10 +29,10 @@ params['num_layers'] = 1
 
 model = LanguageModel(params)
 model.compile()
-n_valid_batches = 100
-progbar = generic_utils.Progbar(dataset.token.document_count)
+n_valid_batches = 20
 for epoch in range(num_epochs):
     dataset.set_data_dir(data_dir)
+    progbar = generic_utils.Progbar(dataset.token.document_count)
     for X_batch,Y_batch in dataset:
         t0 = time.time()
         loss = model.train_on_batch(X_batch,Y_batch)
@@ -41,16 +41,16 @@ for epoch in range(num_epochs):
         wps = np.round((batch_size * seq_len)/(t1-t0))
         progbar.add(len(X_batch), values=[("loss", loss),("perplexity", perp),("words/sec", wps)])
     dataset.set_data_dir(valid_data_dir)
-    perp = []
+    valid_perp = []
     count = 0
     if n_valid_batches is not None:
         progbar = generic_utils.Progbar(n_valid_batches)
-    print 'Estimating validation perplexity on ' + str(n_valid_batches) + ' batches (' + str(n_valid_batches*batch_size) + ' samples)'
+    print '\n\nEstimating validation perplexity on ' + str(n_valid_batches) + ' batches (' + str(n_valid_batches*batch_size) + ' samples)'
     for X_batch, Y_batch in dataset:
         if n_valid_batches is not None:
             progbar.add(1)
-        perp.append(model.evaluate(X_batch, Y_batch))
+        valid_perp.append(model.evaluate(X_batch, Y_batch))
         count += 1
         if count > n_valid_batches:
             break
-    print 'Validation Perplexity: ' + str(np.mean(perp))
+    print '\nEstimated Validation Perplexity: ' + str(np.mean(valid_perp)) + '\n'
