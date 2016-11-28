@@ -19,7 +19,6 @@ num_epochs = 2
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
 
-
 params = {}
 params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size

@@ -34,7 +34,7 @@ class Dataset(object):
         self.batch_size = 32
         self.seq_len = 25
     def  __iter__(self):
-        for fname in self.file_list:
+        for fname in self.file_list[0:1]:
             with open(os.path.join(self.data_dir, fname)) as f:
                 lines = []
                 for line in f:
