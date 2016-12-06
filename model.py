@@ -22,12 +22,12 @@ class LanguageModel(object):
         rnn_output = tf.unpack(self.rnn, axis=1)
         self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
         self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
-        self.output_seq = tf.placeholder(tf.int64, shape=(self.batch_size, self.seq_len))
+        self.output_seq = tf.placeholder(tf.int64, shape=(None, self.seq_len))
         losses = []
         outputs = []
         for t in range(self.seq_len):
             rnn_t = rnn_output[t]
-            y_t = tf.reshape(self.output_seq[:, t], shape=(self.batch_size, 1))
+            y_t = tf.reshape(self.output_seq[:, t], shape=(None, 1))
             step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
                                                    labels=y_t, num_sampled=100, num_classes=self.vocab_size)
             losses.append(step_loss)
