@@ -14,7 +14,7 @@ class LanguageModel(object):
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
         # Set up the input placeholder
-        self.input_seq = tf.placeholder(tf.float32, shape=(self.batch_size, self.seq_len))
+        self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
         # Build the RNN
         self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
         for l in range(self.num_layers):
@@ -27,7 +27,7 @@ class LanguageModel(object):
         outputs = []
         for t in range(self.seq_len):
             rnn_t = rnn_output[t]
-            y_t = tf.reshape(self.output_seq[:, t], shape=([None, 1]))
+            y_t = self.output_seq[:, t]
             step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
                                                    labels=y_t, num_sampled=100, num_classes=self.vocab_size)
             losses.append(step_loss)
