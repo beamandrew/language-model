@@ -27,7 +27,7 @@ class LanguageModel(object):
         outputs = []
         for t in range(self.seq_len):
             rnn_t = rnn_output[t]
-            y_t = tf.reshape(self.output_seq[:, t],[-1,t])
+            y_t = tf.reshape(self.output_seq[:, t],[-1,1])
             step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
                                                    labels=y_t, num_sampled=100, num_classes=self.vocab_size)
             losses.append(step_loss)
