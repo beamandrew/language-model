@@ -12,7 +12,7 @@ valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modelin
 num_words = None
 
 seq_len = 25
-batch_size = 256
+batch_size = 32
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 256
 num_epochs = 20
