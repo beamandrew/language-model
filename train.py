@@ -9,13 +9,13 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
-num_words = 50000
+num_words = None
 
 seq_len = 25
 batch_size = 256
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 256
-num_epochs = 1
+num_epochs = 2
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
@@ -26,14 +26,15 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
-params['hidden_dim'] = 256
-params['num_layers'] = 1
+params['hidden_dim'] = 512
+params['num_layers'] = 2
 
 model = LanguageModel(params)
 model.compile()
 n_valid_batches = 20
 for epoch in range(num_epochs):
     dataset.set_data_dir(data_dir)
+    dataset.set_batch_size(batch_size)
     progbar = generic_utils.Progbar(dataset.token.document_count)
     for X_batch,Y_batch in dataset:
         t0 = time.time()

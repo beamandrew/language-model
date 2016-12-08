@@ -13,7 +13,6 @@ class DataGenerator(object):
         self.progbar = generic_utils.Progbar(len(self.file_list))
     def __iter__(self):
         for fname in self.file_list:
-            print fname
             self.progbar.add(1)
             with open(os.path.join(self.data_dir,fname)) as f:
                 for line in f:
@@ -35,7 +34,6 @@ class Dataset(object):
         self.seq_len = seq_len
     def  __iter__(self):
         for fname in self.file_list:
-            print fname
             with open(os.path.join(self.data_dir, fname)) as f:
                 lines = []
                 for line in f:
