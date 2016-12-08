@@ -12,7 +12,8 @@ class DataGenerator(object):
         self.data_dir = data_dir
         self.progbar = generic_utils.Progbar(len(self.file_list))
     def __iter__(self):
-        for fname in self.file_list[0:2]:
+        for fname in self.file_list:
+            print fname
             self.progbar.add(1)
             with open(os.path.join(self.data_dir,fname)) as f:
                 for line in f:
@@ -20,7 +21,7 @@ class DataGenerator(object):
 
 
 class Dataset(object):
-    def __init__(self,data_dir,num_words=None):
+    def __init__(self,data_dir,num_words=None,batch_size=None,seq_len=None):
         self.file_list = os.listdir(data_dir)
         self.data_dir = data_dir
         self.texts = DataGenerator(data_dir)
@@ -28,13 +29,13 @@ class Dataset(object):
         print('Reading files...')
         self.token.fit_on_texts(self.texts)
         self.vocab_size = len(self.token.word_index)
-        print(str(self.vocab_size))
         if num_words is not None:
             self.vocab_size = num_words
-        self.batch_size = 32
-        self.seq_len = 25
+        self.batch_size = batch_size
+        self.seq_len = seq_len
     def  __iter__(self):
         for fname in self.file_list:
+            print fname
             with open(os.path.join(self.data_dir, fname)) as f:
                 lines = []
                 for line in f:
@@ -50,6 +51,8 @@ class Dataset(object):
                         lines.append(line)
     def set_batch_size(self,batch_size):
         self.batch_size = batch_size
+    def set_seq_len(self, seq_len):
+        self.seq_len = seq_len
     def set_data_dir(self,data_dir):
         self.data_dir = data_dir
         self.file_list = os.listdir(data_dir)

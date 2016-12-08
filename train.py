@@ -7,17 +7,19 @@ import time as time
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
-num_words = None
+num_words = 50000
 
 seq_len = 25
 batch_size = 256
+valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 256
-num_epochs = 5
+num_epochs = 1
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
+dataset.set_seq_len(seq_len)
 
 params = {}
 params['vocab_size'] = dataset.vocab_size
@@ -41,6 +43,7 @@ for epoch in range(num_epochs):
         wps = np.round((batch_size * seq_len)/(t1-t0))
         progbar.add(len(X_batch), values=[("loss", loss),("perplexity", perp),("words/sec", wps)])
     dataset.set_data_dir(valid_data_dir)
+    dataset.set_batch_size(valid_batch_size)
     valid_perp = []
     count = 0
     if n_valid_batches is not None:
