@@ -13,28 +13,30 @@ class LanguageModel(object):
         self.vocab_size = params['vocab_size']
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
-        # Set up the input placeholder
-        self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
-        # Build the RNN
-        self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
-        for l in range(self.num_layers):
-            self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
-        rnn_output = tf.unpack(self.rnn, axis=1)
-        self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
-        self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
-        self.output_seq = tf.placeholder(tf.int64, shape=([None, self.seq_len]))
-        losses = []
-        outputs = []
-        for t in range(self.seq_len):
-            rnn_t = rnn_output[t]
-            y_t = tf.reshape(self.output_seq[:, t],[-1,1])
-            step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
-                                                   labels=y_t, num_sampled=100, num_classes=self.vocab_size)
-            losses.append(step_loss)
-            outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
-        self.step_losses = losses
-        self.output = outputs
-        self.loss = tf.reduce_mean(self.step_losses)
+        with tf.device('/cpu:0'):
+            # Set up the input placeholder
+            self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
+            # Build the RNN
+        with tf.device('/gpu:0'):
+            self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
+            for l in range(self.num_layers):
+                self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
+            rnn_output = tf.unpack(self.rnn, axis=1)
+            self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
+            self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
+            self.output_seq = tf.placeholder(tf.int64, shape=([None, self.seq_len]))
+            losses = []
+            outputs = []
+            for t in range(self.seq_len):
+                rnn_t = rnn_output[t]
+                y_t = tf.reshape(self.output_seq[:, t],[-1,1])
+                step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
+                                                       labels=y_t, num_sampled=100, num_classes=self.vocab_size)
+                losses.append(step_loss)
+                outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
+            self.step_losses = losses
+            self.output = outputs
+            self.loss = tf.reduce_mean(self.step_losses)
         ## Put the softmax on the CPU to save GPU ram
         with tf.device('/cpu:0'):
             self.softmax = tf.nn.softmax(self.output)
