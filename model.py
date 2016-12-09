@@ -34,8 +34,10 @@ class LanguageModel(object):
             outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
         self.step_losses = losses
         self.output = outputs
-        self.softmax = tf.nn.softmax(self.output)
         self.loss = tf.reduce_mean(self.step_losses)
+        ## Put the softmax on the CPU to save GPU ram
+        with tf.device('/cpu:0'):
+            self.softmax = tf.nn.softmax(self.output)
     def compile(self,lr=1e-3):
         self.loss_function = tf.reduce_mean(self.loss)
         self.opt = tf.train.AdamOptimizer(lr).minimize(self.loss_function)
