@@ -29,6 +29,7 @@ params['batch_size'] = batch_size
 params['seq_len'] = seq_len
 params['hidden_dim'] = 128
 params['num_layers'] = 1
+params['embed_size'] = embed_size
 
 model = LanguageModel(params)
 model.compile()
