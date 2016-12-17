@@ -7,39 +7,40 @@ import numpy as np
 
 class LanguageModel(object):
     def __init__(self,params):
-        # Pull out all of the parameters
-        self.batch_size = params['batch_size']
-        self.seq_len = params['seq_len']
-        self.vocab_size = params['vocab_size']
-        self.hidden_dim = params['hidden_dim']
-        self.num_layers = params['num_layers']
-        with tf.device('/cpu:0'):
-            # Set up the input placeholder
-            self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
-            # Build the RNN
-            self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
-        for l in range(self.num_layers):
-            with tf.device('/gpu:' + str(l)):
-                self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
-        with tf.device('/gpu:' + str(self.num_layers + 1)):
-            rnn_output = tf.unpack(self.rnn, axis=1)
-            self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
-            self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
-            self.output_seq = tf.placeholder(tf.int64, shape=([None, self.seq_len]))
-            losses = []
-            outputs = []
-            for t in range(self.seq_len):
-                rnn_t = rnn_output[t]
-                y_t = tf.reshape(self.output_seq[:, t],[-1,1])
-                step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
-                                                       labels=y_t, num_sampled=100, num_classes=self.vocab_size)
-                losses.append(step_loss)
-                outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
-            self.step_losses = losses
-            self.output = outputs
-            self.loss = tf.reduce_mean(self.step_losses)
-            ## Put the softmax on the CPU to save GPU ram
-            self.softmax = tf.nn.softmax(self.output)
+        with tf.Session(config=tf.ConfigProto(allow_soft_placement=True)):
+            # Pull out all of the parameters
+            self.batch_size = params['batch_size']
+            self.seq_len = params['seq_len']
+            self.vocab_size = params['vocab_size']
+            self.hidden_dim = params['hidden_dim']
+            self.num_layers = params['num_layers']
+            with tf.device('/cpu:0'):
+                # Set up the input placeholder
+                self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
+                # Build the RNN
+                self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
+            for l in range(self.num_layers):
+                with tf.device('/gpu:' + str(l)):
+                    self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
+            with tf.device('/gpu:' + str(self.num_layers + 1)):
+                rnn_output = tf.unpack(self.rnn, axis=1)
+                self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
+                self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
+                self.output_seq = tf.placeholder(tf.int64, shape=([None, self.seq_len]))
+                losses = []
+                outputs = []
+                for t in range(self.seq_len):
+                    rnn_t = rnn_output[t]
+                    y_t = tf.reshape(self.output_seq[:, t],[-1,1])
+                    step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
+                                                           labels=y_t, num_sampled=100, num_classes=self.vocab_size)
+                    losses.append(step_loss)
+                    outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
+                self.step_losses = losses
+                self.output = outputs
+                self.loss = tf.reduce_mean(self.step_losses)
+                ## Put the softmax on the CPU to save GPU ram
+                self.softmax = tf.nn.softmax(self.output)
     def compile(self,lr=1e-3):
         self.loss_function = tf.reduce_mean(self.loss)
         self.opt = tf.train.AdamOptimizer(lr).minimize(self.loss_function)
