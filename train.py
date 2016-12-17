@@ -15,7 +15,7 @@ num_words = None
 seq_len = 25
 batch_size = 128
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
-embed_size = 256
+embed_size = 128
 num_epochs = 5
 
 dataset = Dataset(data_dir,num_words)
