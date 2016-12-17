@@ -13,9 +13,9 @@ save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
 
 seq_len = 25
-batch_size = 512
+batch_size = 32
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
-embed_size = 256
+embed_size = 128
 num_epochs = 5
 
 dataset = Dataset(data_dir,num_words)
@@ -27,7 +27,7 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
-params['hidden_dim'] = 512
+params['hidden_dim'] = 128
 params['num_layers'] = 1
 
 model = LanguageModel(params)
