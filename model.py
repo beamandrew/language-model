@@ -14,18 +14,17 @@ class LanguageModel(object):
         self.batch_size = params['batch_size']
         self.seq_len = params['seq_len']
         self.vocab_size = params['vocab_size']
+        self.embed_size = params['embed_size']
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
         with tf.device('/cpu:0'):
             # Set up the input placeholder
             self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
             # Build the RNN
-            self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
+            self.rnn = Embedding(self.vocab_size + 1, self.embed_size, input_length=self.seq_len)(self.input_seq)
         with tf.device('/gpu:0'):
             for l in range(self.num_layers):
-            #with tf.device('/gpu:' + str(l)):
                 self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
-        #with tf.device('/gpu:' + str(self.num_layers + 1)):
             rnn_output = tf.unpack(self.rnn, axis=1)
             self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
             self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
