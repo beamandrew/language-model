@@ -13,10 +13,11 @@ class LanguageModel(object):
         self.vocab_size = params['vocab_size']
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
-        # Set up the input placeholder
-        self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
-        # Build the RNN
-        self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
+        with tf.device('/cpu:0'):
+            # Set up the input placeholder
+            self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
+            # Build the RNN
+            self.rnn = Embedding(self.vocab_size + 1, 128, input_length=self.seq_len)(self.input_seq)
         for l in range(self.num_layers):
             self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
         rnn_output = tf.unpack(self.rnn, axis=1)
@@ -36,8 +37,7 @@ class LanguageModel(object):
         self.output = outputs
         self.loss = tf.reduce_mean(self.step_losses)
         ## Put the softmax on the CPU to save GPU ram
-        with tf.device('/cpu:0'):
-            self.softmax = tf.nn.softmax(self.output)
+        self.softmax = tf.nn.softmax(self.output)
     def compile(self,lr=1e-3):
         self.loss_function = tf.reduce_mean(self.loss)
         self.opt = tf.train.AdamOptimizer(lr).minimize(self.loss_function)
@@ -69,4 +69,14 @@ class LanguageModel(object):
         log_prob /= np.float(Y.shape[0] * Y.shape[1])
         perplexity = np.exp(-log_prob)
         return perplexity
+    def generate(self,seed='',temperature=1.0):
+        pass
+    def save(self,save_path='./'):
+        saver = tf.train.Saver()
+        save_path = saver.save(self.sess, save_path + 'model.ckpt')
+        print("Model saved in file: %s" % save_path)
+    def load(self,save_path='./'):
+        saver = tf.train.Saver()
+        saver.restore(self.sess, save_path + 'model.ckpt')
+        print("Model restored.")
 

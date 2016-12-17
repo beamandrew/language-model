@@ -9,6 +9,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
+save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = 150000
 
 seq_len = 25
@@ -43,6 +44,7 @@ for epoch in range(num_epochs):
         t1 = time.time()
         wps = np.round((batch_size * seq_len)/(t1-t0))
         progbar.add(len(X_batch), values=[("loss", loss),("perplexity", perp),("words/sec", wps)])
+    model.save(save_dir)
     dataset.set_data_dir(valid_data_dir)
     dataset.set_batch_size(valid_batch_size)
     valid_perp = []
