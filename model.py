@@ -22,7 +22,6 @@ class LanguageModel(object):
             self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
             # Build the RNN
             self.rnn = Embedding(self.vocab_size + 1, self.embed_size, input_length=self.seq_len)(self.input_seq)
-        #with tf.device('/gpu:0'):
             for l in range(self.num_layers):
                 self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
             rnn_output = tf.unpack(self.rnn, axis=1)
@@ -35,7 +34,7 @@ class LanguageModel(object):
                 rnn_t = rnn_output[t]
                 y_t = tf.reshape(self.output_seq[:, t],[-1,1])
                 step_loss = tf.nn.sampled_softmax_loss(weights=self.w_proj, biases=self.b_proj, inputs=rnn_t,
-                                                       labels=y_t, num_sampled=100, num_classes=self.vocab_size)
+                                                       labels=y_t, num_sampled=500, num_classes=self.vocab_size)
                 losses.append(step_loss)
                 outputs.append(tf.matmul(rnn_t, tf.transpose(self.w_proj)) + self.b_proj)
             self.step_losses = losses
