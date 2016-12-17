@@ -15,7 +15,7 @@ num_words = None
 seq_len = 25
 batch_size = 128
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
-embed_size = 128
+embed_size = 256
 num_epochs = 5
 
 dataset = Dataset(data_dir,num_words)
@@ -27,7 +27,7 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
-params['hidden_dim'] = 128
+params['hidden_dim'] = 256
 params['num_layers'] = 1
 params['embed_size'] = embed_size
 
