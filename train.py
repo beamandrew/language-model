@@ -10,7 +10,7 @@ tf.logging.set_verbosity(tf.logging.ERROR)
 data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 save_dir = '/home/ab455/language-model/checkpoints/'
-num_words = 150000
+num_words = None
 
 seq_len = 25
 batch_size = 512
