@@ -7,7 +7,7 @@ import numpy as np
 
 class LanguageModel(object):
     def __init__(self,params):
-        config = tf.ConfigProto(allow_soft_placement=True)
+        config = tf.ConfigProto(allow_soft_placement=False)
         self.sess = tf.Session(config = config)
         K.set_session(self.sess)
         # Pull out all of the parameters
