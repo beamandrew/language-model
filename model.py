@@ -17,7 +17,7 @@ class LanguageModel(object):
         self.embed_size = params['embed_size']
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
-        with tf.device('/cpu:0'):
+        with tf.device('/gpu:0'):
             # Set up the input placeholder
             self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
             # Build the RNN
