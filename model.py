@@ -7,6 +7,9 @@ import numpy as np
 
 class LanguageModel(object):
     def __init__(self,params):
+        config = tf.ConfigProto(allow_soft_placement=True)
+        self.sess = tf.Session(config = config)
+        K.set_session(self.sess)
         # Pull out all of the parameters
         self.batch_size = params['batch_size']
         self.seq_len = params['seq_len']
@@ -43,9 +46,6 @@ class LanguageModel(object):
     def compile(self,lr=1e-3):
         self.loss_function = tf.reduce_mean(self.loss)
         self.opt = tf.train.AdamOptimizer(lr).minimize(self.loss_function)
-        config = tf.ConfigProto(allow_soft_placement=True)
-        self.sess = tf.Session(config = config)
-        K.set_session(self.sess)
         self.sess.run(tf.initialize_all_variables())
     def train_on_batch(self,X_batch,Y_batch):
         #self.opt.run(session=self.sess,feed_dict={self.input_seq: X_batch, self.output_seq: Y_batch})
