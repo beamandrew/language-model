@@ -17,6 +17,8 @@ batch_size = 192
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
+hidden_size = 256
+num_layers = 1
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
@@ -27,8 +29,8 @@ params['vocab_size'] = dataset.vocab_size
 params['num_classes'] = dataset.vocab_size
 params['batch_size'] = batch_size
 params['seq_len'] = seq_len
-params['hidden_dim'] = 256
-params['num_layers'] = 1
+params['hidden_dim'] = hidden_size
+params['num_layers'] = num_layers
 params['embed_size'] = embed_size
 
 model = LanguageModel(params)
