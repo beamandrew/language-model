@@ -17,13 +17,13 @@ batch_size = 192
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
-hidden_size = 256
-num_layers = 1
+hidden_size = 1024
+num_layers = 2
 
 dataset = Dataset(data_dir,num_words)
 dataset.set_batch_size(batch_size)
 dataset.set_seq_len(seq_len)
-dataset.save('./checkpoints/')
+dataset.save('./checkpoints_large/')
 
 params = {}
 params['vocab_size'] = dataset.vocab_size

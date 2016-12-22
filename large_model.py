@@ -5,6 +5,10 @@ from keras.optimizers import Adam,SGD
 import keras.backend as K
 import numpy as np
 
+```
+Builds a large language model spread across multiple GPUs
+```
+
 class LargeLanguageModel(object):
     def __init__(self,params):
         config = tf.ConfigProto(allow_soft_placement=True)
