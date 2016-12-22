@@ -1,6 +1,6 @@
 from data_utils import Dataset
 from keras.utils import generic_utils
-from model import LanguageModel
+from large_model import LargeLanguageModel
 import numpy as np
 import tensorflow as tf
 import time as time
