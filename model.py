@@ -77,6 +77,7 @@ class LanguageModel(object):
         saver = tf.train.Saver()
         save_path = saver.save(self.sess, save_path + 'model.ckpt')
         print("Model saved in file: %s" % save_path)
+
     def load(self,save_path='./'):
         saver = tf.train.Saver()
         saver.restore(self.sess, save_path + 'model.ckpt')

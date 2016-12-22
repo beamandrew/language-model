@@ -6,6 +6,8 @@ from keras.utils.np_utils import to_categorical
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import generic_utils
 
+import pickle
+
 class DataGenerator(object):
     def __init__(self,data_dir):
         self.file_list = os.listdir(data_dir)
@@ -54,3 +56,11 @@ class Dataset(object):
     def set_data_dir(self,data_dir):
         self.data_dir = data_dir
         self.file_list = os.listdir(data_dir)
+    def save(self,save_path='./'):
+        ## Need to save the tokenizer properties ##
+        with open(save_path + 'word_counts.pickle', 'wb') as handle:
+            pickle.dump(self.token.word_counts, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(save_path + 'word_docs.pickle', 'wb') as handle:
+            pickle.dump(self.token.word_docs, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(save_path + 'word_index.pickle', 'wb') as handle:
+            pickle.dump(self.token.word_index, handle, protocol=pickle.HIGHEST_PROTOCOL)
