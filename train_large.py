@@ -34,7 +34,7 @@ params['hidden_dim'] = hidden_size
 params['num_layers'] = num_layers
 params['embed_size'] = embed_size
 
-model = LanguageModel(params)
+model = LargeLanguageModel(params)
 model.compile()
 n_valid_batches = None
 for epoch in range(num_epochs):
