@@ -13,11 +13,11 @@ save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
 
 seq_len = 25
-batch_size = 192
+batch_size = 256
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
-hidden_size = 512
+hidden_size = 256
 num_layers = 2
 
 dataset = Dataset(data_dir,num_words)
