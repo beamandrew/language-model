@@ -13,7 +13,7 @@ save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
 
 seq_len = 25
-batch_size = 64
+batch_size = 192
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
