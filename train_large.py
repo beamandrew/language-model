@@ -7,7 +7,7 @@ import time as time
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
