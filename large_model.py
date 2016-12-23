@@ -8,7 +8,7 @@ import numpy as np
 
 class LargeLanguageModel(object):
     def __init__(self,params):
-        config = tf.ConfigProto(allow_soft_placement=True)
+        config = tf.ConfigProto(allow_soft_placement=False)
         self.sess = tf.Session(config = config)
         K.set_session(self.sess)
         # Pull out all of the parameters
@@ -24,10 +24,11 @@ class LargeLanguageModel(object):
             # Build the RNN
             self.rnn = Embedding(self.vocab_size + 1, self.embed_size, input_length=self.seq_len)(self.input_seq)
         for l in range(self.num_layers):
-            print 'Adding layer to gpu ' + str(l)
+            print 'Adding LSTM layer to gpu ' + str(l)
             with tf.device('/gpu:' + str(l)):
                 self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
         with tf.device('/gpu:' + str(self.num_layers + 1)):
+            print 'Adding output layer to gpu ' + str(self.num_layers + 1)
             rnn_output = tf.unpack(self.rnn, axis=1)
             self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
             self.b_proj = tf.Variable(tf.zeros([self.vocab_size]))
@@ -50,7 +51,6 @@ class LargeLanguageModel(object):
         self.opt = tf.train.AdamOptimizer(lr).minimize(self.loss_function)
         self.sess.run(tf.initialize_all_variables())
     def train_on_batch(self,X_batch,Y_batch):
-        #self.opt.run(session=self.sess,feed_dict={self.input_seq: X_batch, self.output_seq: Y_batch})
         _, loss_value = self.sess.run([self.opt, self.loss],feed_dict={self.input_seq: X_batch, self.output_seq: Y_batch})
         return loss_value
     def predict(self,X,asarray=True):
