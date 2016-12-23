@@ -17,7 +17,7 @@ batch_size = 64
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
-hidden_size = 1024
+hidden_size = 256
 num_layers = 2
 
 dataset = Dataset(data_dir,num_words)
