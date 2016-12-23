@@ -24,7 +24,7 @@ class LargeLanguageModel(object):
             # Build the RNN
             self.rnn = Embedding(self.vocab_size + 1, self.embed_size, input_length=self.seq_len)(self.input_seq)
         for l in range(self.num_layers):
-            print 'Adding layger to gpu ' + str(l)
+            print 'Adding layer to gpu ' + str(l)
             with tf.device('/gpu:' + str(l)):
                 self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
         with tf.device('/gpu:' + str(self.num_layers + 1)):
