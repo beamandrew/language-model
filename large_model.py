@@ -20,19 +20,19 @@ class LargeLanguageModel(object):
         self.num_layers = params['num_layers']
         current_gpu = 0
         with tf.device('/gpu:' + str(current_gpu)):
-            current_gpu = 1
+            current_gpu += 1
             # Set up the input placeholder
             self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
             # Build the RNN
             self.rnn = Embedding(self.vocab_size + 1, self.embed_size, input_length=self.seq_len)(self.input_seq)
         print 'Adding LSTM layer to gpu ' + str(current_gpu)
         with tf.device('/gpu:' + str(current_gpu)):
-            self.rnn = LSTM(output_dim=1024, return_sequences=True, name='rnn_1')(self.rnn)
+            self.rnn = LSTM(output_dim=2048, return_sequences=True, name='rnn_1')(self.rnn)
             current_gpu += 1
-        print 'Adding LSTM layer to gpu ' + str(current_gpu)
-        with tf.device('/gpu:' + str(current_gpu)):
+        #print 'Adding LSTM layer to gpu ' + str(current_gpu)
+        #with tf.device('/gpu:' + str(current_gpu)):
             self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
-            current_gpu += 1
+        #    current_gpu += 1
         with tf.device('/gpu:' + str(current_gpu)):
             print 'Adding output layer to gpu ' + str(current_gpu)
             current_gpu += 1
