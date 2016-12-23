@@ -30,7 +30,7 @@ class LargeLanguageModel(object):
                 self.rnn = LSTM(output_dim=self.hidden_dim, return_sequences=True, name='rnn_1')(self.rnn)
                 current_gpu += 1
         with tf.device('/gpu:' + str(current_gpu)):
-            print 'Adding output layer to gpu ' + str(self.num_layers + 1)
+            print 'Adding output layer to gpu ' + str(current_gpu)
             current_gpu += 1
             rnn_output = tf.unpack(self.rnn, axis=1)
             self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]))
