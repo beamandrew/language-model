@@ -19,7 +19,8 @@ class LargeLanguageModel(object):
         self.hidden_dim = params['hidden_dim']
         self.num_layers = params['num_layers']
         current_gpu = 0
-        with tf.device('/cpu:0'):
+        with tf.device('/gpu:' + str(current_gpu)):
+            current_gpu = 1
             # Set up the input placeholder
             self.input_seq = tf.placeholder(tf.float32, shape=[None, self.seq_len])
             # Build the RNN
