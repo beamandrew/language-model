@@ -39,6 +39,9 @@ class LargeLanguageModel(object):
             rnn_output = tf.unpack(self.rnn, axis=1)
             self.w_proj = tf.Variable(tf.zeros([self.vocab_size, self.hidden_dim]),dtype=tf.float32)
             self.b_proj = tf.Variable(tf.zeros([self.vocab_size]),dtype=tf.float32)
+        with tf.device('/gpu:' + str(current_gpu)):
+            print 'Adding loss functions to gpu ' + str(current_gpu)
+            current_gpu += 1
             self.output_seq = tf.placeholder(tf.int32, shape=([None, self.seq_len]))
             losses = []
             outputs = []
