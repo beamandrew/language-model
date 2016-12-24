@@ -36,7 +36,7 @@ params['embed_size'] = embed_size
 
 model = LargeLanguageModel(params)
 model.compile()
-n_valid_batches = None
+n_valid_batches = 20
 for epoch in range(num_epochs):
     dataset.set_data_dir(data_dir)
     dataset.set_batch_size(batch_size)
