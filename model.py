@@ -5,7 +5,7 @@ from keras.optimizers import Adam,SGD
 import keras.backend as K
 import numpy as np
 
-class LargeLanguageModel(object):
+class LanguageModel(object):
     def __init__(self,params):
         config = tf.ConfigProto(allow_soft_placement=True)
         self.sess = tf.Session(config = config)
