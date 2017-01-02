@@ -79,7 +79,6 @@ class LargeLanguageModel(object):
                     correct_prob = preds[i,j,Y[i,j]]
                     log_prob += np.log(correct_prob)
                     n_tokens += 1.
-
         return log_prob, n_tokens
     def generate(self,seed='',temperature=1.0):
         pass
