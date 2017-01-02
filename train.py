@@ -55,7 +55,15 @@ for epoch in range(num_epochs):
     tokens = 0.
     count = 0
     print '\n\nEstimating validation perplexity...'
+    if epoch == 1:
+        n_valid_batches = 0
+    else:
+        progbar = generic_utils.Progbar(n_valid_batches)
     for X_batch, Y_batch in dataset:
+        if epoch == 1:
+            n_valid_batches += 1
+        else:
+            progbar.add(1)
         log_prob, n_tokens = model.evaluate(X_batch, Y_batch)
         count += 1
         valid_logprob += log_prob
