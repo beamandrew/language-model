@@ -7,7 +7,7 @@ import time as time
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
@@ -51,16 +51,16 @@ for epoch in range(num_epochs):
     model.save(save_dir)
     dataset.set_data_dir(valid_data_dir)
     dataset.set_batch_size(valid_batch_size)
-    valid_perp = []
+    valid_logprob = 0.
+    tokens = 0.
     count = 0
     if n_valid_batches is not None:
         progbar = generic_utils.Progbar(n_valid_batches)
     print '\n\nEstimating validation perplexity on ' + str(n_valid_batches) + ' batches (' + str(n_valid_batches*batch_size) + ' samples)'
     for X_batch, Y_batch in dataset:
-        if n_valid_batches is not None:
-            progbar.add(1)
-        valid_perp.append(model.evaluate(X_batch, Y_batch))
+        log_prob, n_tokens = model.evaluate(X_batch, Y_batch)
         count += 1
-        if count > n_valid_batches:
-            break
-    print '\nEstimated Validation Perplexity: ' + str(np.mean(valid_perp)) + '\n'
+        valid_logprob += log_prob
+        tokens += n_tokens
+    valid_perp = np.exp(-valid_logprob/tokens)
+    print '\nEstimated Validation Perplexity: ' + str(valid_perp) + '\n'

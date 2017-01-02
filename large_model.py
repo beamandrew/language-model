@@ -66,20 +66,21 @@ class LargeLanguageModel(object):
             ## Make dimensions more sensible ##
             preds = np.swapaxes(preds,0,1)
         return preds
-    def evaluate(self,X,Y):
+    def evaluate(self,X,Y,normalize=False):
         preds = self.sess.run(self.softmax, feed_dict={self.input_seq: X})
         preds = np.asarray(preds)
         preds = np.swapaxes(preds, 0, 1)
         log_prob = 0.
+        n_tokens = 0.
         ## Note we're only going to use the non-zero entries ##
         for i in range(len(X)):
             for j in range(len(X[i])):
                 if X[i,j] != 0:
                     correct_prob = preds[i,j,Y[i,j]]
                     log_prob += np.log(correct_prob)
-        log_prob /= np.float(Y.shape[0] * Y.shape[1])
-        perplexity = np.exp(-log_prob)
-        return perplexity
+                    n_tokens += 1.
+
+        return log_prob, n_tokens
     def generate(self,seed='',temperature=1.0):
         pass
     def save(self,save_path='./'):
