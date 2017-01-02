@@ -17,7 +17,7 @@ batch_size = 192
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
-hidden_size = 256
+hidden_size = 128
 num_layers = 1
 
 dataset = Dataset(data_dir,num_words)
@@ -54,13 +54,11 @@ for epoch in range(num_epochs):
     valid_logprob = 0.
     tokens = 0.
     count = 0
-    if n_valid_batches is not None:
-        progbar = generic_utils.Progbar(n_valid_batches)
-    print '\n\nEstimating validation perplexity on ' + str(n_valid_batches) + ' batches (' + str(n_valid_batches*batch_size) + ' samples)'
+    print '\n\nEstimating validation perplexity...'
     for X_batch, Y_batch in dataset:
         log_prob, n_tokens = model.evaluate(X_batch, Y_batch)
         count += 1
         valid_logprob += log_prob
         tokens += n_tokens
     valid_perp = np.exp(-valid_logprob/tokens)
-    print '\nEstimated Validation Perplexity: ' + str(valid_perp) + '\n'
+    print '\nValidation Perplexity: ' + str(valid_perp) + '\n'
