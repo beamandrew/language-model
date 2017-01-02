@@ -42,9 +42,9 @@ class Dataset(object):
                     if len(lines) == self.batch_size:
                         proc_txt = self.token.texts_to_sequences(lines)
                         X_batch = [txt[:min(len(txt)-1, self.seq_len)] for txt in proc_txt]
-                        X_batch = pad_sequences(X_batch)
+                        X_batch = pad_sequences(X_batch,maxlen=self.seq_len)
                         Y_batch = [txt[1:min(len(txt), self.seq_len) + 1] for txt in proc_txt]
-                        Y_batch = pad_sequences(Y_batch)
+                        Y_batch = pad_sequences(Y_batch,maxlen=self.seq_len)
                         lines = []
                         yield X_batch,Y_batch
                     else:
