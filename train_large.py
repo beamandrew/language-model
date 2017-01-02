@@ -36,7 +36,6 @@ params['embed_size'] = embed_size
 
 model = LargeLanguageModel(params)
 model.compile()
-n_valid_batches = 20
 for epoch in range(num_epochs):
     dataset.set_data_dir(data_dir)
     dataset.set_batch_size(batch_size)
@@ -51,16 +50,22 @@ for epoch in range(num_epochs):
     model.save(save_dir)
     dataset.set_data_dir(valid_data_dir)
     dataset.set_batch_size(valid_batch_size)
-    valid_perp = []
+    valid_logprob = 0.
+    tokens = 0.
     count = 0
-    if n_valid_batches is not None:
+    print '\n\nEstimating validation perplexity...'
+    if epoch == 1:
+        n_valid_batches = 0
+    else:
         progbar = generic_utils.Progbar(n_valid_batches)
-    print '\n\nEstimating validation perplexity on ' + str(n_valid_batches) + ' batches (' + str(n_valid_batches*batch_size) + ' samples)'
     for X_batch, Y_batch in dataset:
-        if n_valid_batches is not None:
+        if epoch == 1:
+            n_valid_batches += 1
+        else:
             progbar.add(1)
-        valid_perp.append(model.evaluate(X_batch, Y_batch))
+        log_prob, n_tokens = model.evaluate(X_batch, Y_batch)
         count += 1
-        if count > n_valid_batches:
-            break
-    print '\nEstimated Validation Perplexity: ' + str(np.mean(valid_perp)) + '\n'
+        valid_logprob += log_prob
+        tokens += n_tokens
+    valid_perp = np.exp(-valid_logprob/tokens)
+    print '\nValidation Perplexity: ' + str(valid_perp) + '\n'

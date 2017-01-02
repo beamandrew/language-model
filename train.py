@@ -7,7 +7,7 @@ import time as time
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
@@ -17,7 +17,7 @@ batch_size = 192
 valid_batch_size = 16 ## Needs to be smaller due to memory issues
 embed_size = 128
 num_epochs = 5
-hidden_size = 128
+hidden_size = 256
 num_layers = 1
 
 dataset = Dataset(data_dir,num_words)
