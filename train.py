@@ -43,7 +43,7 @@ for epoch in range(num_epochs):
     progbar = generic_utils.Progbar(dataset.token.document_count)
     for X_batch,Y_batch in dataset:
         t0 = time.time()
-        loss = model.train_on_batch(X_batch,Y_batch)
+        loss = model.train_on_batch(X_batch,Y_batch,epoch)
         perp = np.exp(np.float32(loss))
         t1 = time.time()
         wps = np.round((batch_size * seq_len)/(t1-t0))
