@@ -54,12 +54,12 @@ for epoch in range(num_epochs):
     tokens = 0.
     count = 0
     print '\n\nEstimating validation perplexity...'
-    if epoch == 1:
+    if epoch == 0:
         n_valid_batches = 0
     else:
         progbar = generic_utils.Progbar(n_valid_batches)
     for X_batch, Y_batch in dataset:
-        if epoch == 1:
+        if epoch == 0:
             n_valid_batches += 1
         else:
             progbar.add(1)
