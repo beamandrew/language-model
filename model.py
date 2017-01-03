@@ -52,7 +52,7 @@ class LanguageModel(object):
     def train_on_batch(self,X_batch,Y_batch,epoch_index):
         #self.opt.run(session=self.sess,feed_dict={self.input_seq: X_batch, self.output_seq: Y_batch})
         _, loss_value = self.sess.run([self.opt, self.loss],feed_dict={self.input_seq: X_batch, self.output_seq: Y_batch})
-        writer.add_summary(loss_value, epoch_index)
+        self.writer.add_summary(loss_value, epoch_index)
         return loss_value
     def predict(self,X,asarray=True):
         preds = self.sess.run(self.softmax, feed_dict={self.input_seq: X})
