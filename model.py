@@ -43,7 +43,6 @@ class LanguageModel(object):
             self.loss = tf.reduce_mean(self.step_losses)
             self.softmax = tf.nn.softmax(self.output)
             tf.scalar_summary("log-probability", self.loss)
-            tf.scalar_summary("perplexity", np.exp(-self.loss))
             self.summary_op = tf.merge_all_summaries()
     def compile(self,lr=1e-3):
         self.loss_function = tf.reduce_mean(self.loss)
