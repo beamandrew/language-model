@@ -7,7 +7,7 @@ import time as time
 
 tf.logging.set_verbosity(tf.logging.ERROR)
 
-data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/train_small/'
+data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/'
 valid_data_dir = '/mnt/raid1/billion-word-corpus/1-billion-word-language-modeling-benchmark/heldout-monolingual.tokenized.shuffled/'
 save_dir = '/home/ab455/language-model/checkpoints/'
 num_words = None
@@ -43,7 +43,7 @@ for epoch in range(num_epochs):
     progbar = generic_utils.Progbar(dataset.token.document_count)
     for X_batch,Y_batch in dataset:
         t0 = time.time()
-        loss = model.train_on_batch(X_batch,Y_batch,epoch)
+        loss = model.train_on_batch(X_batch,Y_batch)
         perp = np.exp(np.float32(loss))
         t1 = time.time()
         wps = np.round((batch_size * seq_len)/(t1-t0))
